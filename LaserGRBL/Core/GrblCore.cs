@@ -32,9 +32,9 @@ namespace LaserGRBL
 		//public static PSHelper.PSFile MaterialDB = PSHelper.PSFile.Load();
 		public static PSHelper.MaterialDB MaterialDB = PSHelper.MaterialDB.Load();
 
-		public static string GCODE_STD_HEADER = "G90 (use absolute coordinates)";
+		public static string GCODE_STD_HEADER = ";START_GCODE\nG21 ;metric values\nG90 ;absolute positioning\nM82 ;set extruder to absolute mode\nM106 S255 ;start with the fan on\nG28 X0 Y0  ;move X/Y to min endstops\nG1 F1200 X10\nG28 Z0 ;move Z to min endstops\nG1 F1200";
 		public static string GCODE_STD_PASSES = ";(Uncomment if you want to sink Z axis)\r\n;G91 (use relative coordinates)\r\n;G0 Z-1 (sinks the Z axis, 1mm)\r\n;G90 (use absolute coordinates)";
-		public static string GCODE_STD_FOOTER = "G0 X0 Y0 Z0 (move back to origin)";
+		public static string GCODE_STD_FOOTER = ";END_GCODE\nG91 ;relative positioning\nG1 Z+0.5 X-20 Y-20 F{travel_speed} ;move Z up a bit and retract filament even more\nG28 X0 Y0 ;move X/Y to min endstops, so the head is out of the way\nG1 X0 Y100\nM84 X Y E B ;steppers off\nG90 ;absolute positioning";
 
 		[Serializable]
 		public class ThreadingMode
@@ -782,10 +782,10 @@ namespace LaserGRBL
 					{
 						string fn = System.IO.Path.GetFileNameWithoutExtension(lastFN);
 						string path = System.IO.Path.GetDirectoryName(lastFN);
-						sfd.FileName = System.IO.Path.Combine(path, fn + ".nc");
+						sfd.FileName = System.IO.Path.Combine(path, fn + ".gcode");
 					}
 
-					sfd.Filter = "GCODE Files|*.nc";
+					sfd.Filter = "GCODE Files|*.gcode";
 					sfd.AddExtension = true;
 					sfd.RestoreDirectory = true;
 
